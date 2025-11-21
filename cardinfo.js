@@ -1,7 +1,6 @@
 // --- ÖDEME SAYFASI (odeme.html) için JS ---
 document.addEventListener('DOMContentLoaded', () => {
 	if (document.getElementById('paymentTotal')) {
-		// LocalStorage'dan sepeti al
 		const cart = JSON.parse(localStorage.getItem('myCS2Cart')) || [];
 		let total = 0;
 		cart.forEach(item => {
@@ -40,9 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	const navLinks = document.querySelectorAll(".category-nav .nav-link");
 	const contentSections = document.querySelectorAll(".content-section");
 	
-	// Sayfa yüklendiğinde bıçak sayfasını varsayılan olarak aktif yap
 	function setDefaultActiveSection() {
-		// Tüm section'ları pasif yap
 		contentSections.forEach(section => {
 			section.classList.remove("active");
 		});
@@ -50,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			navLink.classList.remove("active");
 		});
 		
-		// Bıçak sayfasını aktif yap
 		const knivesSection = document.getElementById("knives-content");
 		const knivesNavLink = document.querySelector('.nav-link[data-target="knives-content"]');
 		
@@ -60,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 	
-	// Sayfa yüklendiğinde varsayılan section'ı aktif yap
 	setDefaultActiveSection();
 	
 	navLinks.forEach(link => {
@@ -99,7 +94,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	const cartItemsWrapper = document.querySelector('.cart-items-container');
 	const cartTotalElement = document.querySelector('.cart-total span:last-child');
 	updateCartHTML();
-	// Global event listener for add-to-cart buttons (includes dynamically added ones)
 	document.addEventListener('click', function(e) {
 		if (e.target.closest('.add-to-cart') || e.target.closest('.eklemebtn')) {
 			e.preventDefault();
@@ -112,8 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				img: button.getAttribute('data-img'),
 				quantity: 1
 			};
-			
-			// Validation
+
 			if (!product.id || !product.name || !product.price || !product.img) {
 				console.error('Ürün bilgileri eksik:', product);
 				return;
@@ -123,29 +116,23 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 	function addToCart(product) {
-		// Aynı ürün sepette var mı kontrol et
 		const existingItemIndex = cart.findIndex(item => item.id === product.id);
 		
 		if (existingItemIndex !== -1) {
-			// Ürün zaten sepette varsa miktarını artır
 			cart[existingItemIndex].quantity += 1;
 		} else {
-			// Ürün sepette yoksa yeni olarak ekle
 			cart.push(product);
 		}
 		
 		saveCart();
 		updateCartHTML();
 		
-		// Görsel geri bildirim - butonun yanında kısa süre "✓" göster
 		showAddToCartFeedback(product.name);
 		
-		// Başarı mesajı (isteğe bağlı)
 		console.log('Ürün sepete eklendi:', product.name);
 	}
 	
 	function showAddToCartFeedback(productName) {
-		// Kısa bir bildirim göster
 		const notification = document.createElement('div');
 		notification.style.cssText = `
 			position: fixed;
@@ -165,7 +152,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		document.body.appendChild(notification);
 		
-		// 2 saniye sonra kaldır
 		setTimeout(() => {
 			notification.style.animation = 'slideOut 0.3s ease-out';
 			setTimeout(() => {
@@ -178,7 +164,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	function removeFromCart(productId) {
 		const itemIndex = cart.findIndex(item => item.id === productId);
 		
-		// Ürün bulunamazsa işlemi durdur
 		if (itemIndex === -1) {
 			console.warn('Ürün sepette bulunamadı:', productId);
 			return;
@@ -186,19 +171,15 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		const item = cart[itemIndex];
 		
-		// Eğer ürünün miktarı 1'den fazlaysa, miktarını azalt
 		if (item.quantity > 1) {
 			item.quantity -= 1;
 		} else {
-			// Eğer miktar 1 ise, ürünü sepetten tamamen çıkar
 			cart.splice(itemIndex, 1);
 		}
 		
-		// Değişiklikleri kaydet ve ekranı güncelle
 		saveCart();
 		updateCartHTML();
 		
-		// Başarı mesajı (isteğe bağlı)
 		console.log('Ürün sepetten çıkarıldı/azaltıldı:', productId);
 	}
 	function saveCart() {
@@ -217,7 +198,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			const cartItem = document.createElement('div');
 			cartItem.classList.add('cart-item');
 			
-			// HTML içeriği
 			cartItem.innerHTML = `
 				<div style="display:flex; align-items:center; gap:10px; padding:12px; border-radius:8px; background-color:rgba(255,255,255,0.05); margin-bottom:10px;">
 					<img src="${item.img}" style="width:55px; height:55px; object-fit:cover; border-radius:8px; border: 2px solid #333;">
@@ -245,18 +225,15 @@ document.addEventListener("DOMContentLoaded", function() {
 				</div>
 			`;
 			
-			// Eksi butonuna event listener ekle
 			const removeBtn = cartItem.querySelector('.remove-item-btn');
 			removeBtn.addEventListener('click', function() {
 				const itemId = this.getAttribute('data-item-id');
 				removeFromCart(itemId);
 			});
 			
-			// Artı butonuna event listener ekle
 			const addBtn = cartItem.querySelector('.add-item-btn');
 			addBtn.addEventListener('click', function() {
 				const itemId = this.getAttribute('data-item-id');
-				// Mevcut ürünü bulup bir adet daha ekle
 				const existingItem = cart.find(cartItem => cartItem.id === itemId);
 				if (existingItem) {
 					addToCart({
@@ -269,7 +246,6 @@ document.addEventListener("DOMContentLoaded", function() {
 				}
 			});
 			
-			// Hover efektleri
 			removeBtn.addEventListener('mouseenter', function() {
 				this.style.backgroundColor = 'rgba(255, 68, 68, 0.2)';
 				this.style.transform = 'scale(1.1)';
@@ -318,21 +294,18 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-// --- SEPETİ BOŞALT BUTONU (Onaysız - Direkt Siler) ---
 const clearCartBtn = document.getElementById('clearCartBtn');
 
 if (clearCartBtn) {
     clearCartBtn.addEventListener('click', function() {
         
-        // 1. Sepet zaten boşsa hiçbir şey yapma
         if (cart.length === 0) {
             return; 
         }
 
-        // 2. HİÇBİR ŞEY SORMADAN DİREKT SİL
-        cart = []; // Sepet dizisini boşalt
-        saveCart(); // LocalStorage'daki veriyi sil
-        updateCartHTML(); // Ekranı güncelle (temizle)
+        cart = []; 
+        saveCart(); 
+        updateCartHTML(); 
         
     });
 }
@@ -379,15 +352,12 @@ if (clearCartBtn) {
 	modalOverlay.addEventListener('click', closeProductModal);
 });
 
-// --- HIZLI SAT ÖZELLİĞİ ---
 document.addEventListener('DOMContentLoaded', () => {
-	// Hızlı Sat butonuna event listener ekle
 	const fastSellBtn = document.querySelector('.fastsell-btn');
 	if (fastSellBtn) {
 		fastSellBtn.addEventListener('click', function(e) {
 			e.preventDefault();
 			
-			// Steam inventory simulation
 			const userSkins = [
 				{ name: "AK-47 | Redline", condition: "Field-Tested", price: 2450.00 },
 				{ name: "M4A4 | Asiimov", condition: "Battle-Scarred", price: 1850.00 },
@@ -395,18 +365,13 @@ document.addEventListener('DOMContentLoaded', () => {
 				{ name: "Glock-18 | Water Elemental", condition: "Minimal Wear", price: 890.00 },
 				{ name: "USP-S | Kill Confirmed", condition: "Field-Tested", price: 2100.00 }
 			];
-			
-			// Random skin selection for demo
 			const randomSkin = userSkins[Math.floor(Math.random() * userSkins.length)];
-			
-			// Show fast sell modal
 			showFastSellModal(randomSkin);
 		});
 	}
 });
 
 function showFastSellModal(skin) {
-	// Modal HTML'i oluştur
 	const modalHTML = `
 		<div id="fastSellModal" class="fast-sell-modal">
 			<div class="fast-sell-overlay"></div>
@@ -450,17 +415,14 @@ function showFastSellModal(skin) {
 		</div>
 	`;
 	
-	// Modal'ı body'e ekle
 	document.body.insertAdjacentHTML('beforeend', modalHTML);
 	
-	// Modal event listeners
 	const modal = document.getElementById('fastSellModal');
 	const closeBtn = document.querySelector('.close-fast-sell');
 	const overlay = document.querySelector('.fast-sell-overlay');
 	const instantSellBtn = document.querySelector('.instant-sell-btn');
 	const marketSellBtn = document.querySelector('.market-sell-btn');
 	
-	// Close modal functions
 	const closeFastSellModal = () => {
 		modal.remove();
 	};
@@ -468,7 +430,6 @@ function showFastSellModal(skin) {
 	closeBtn.addEventListener('click', closeFastSellModal);
 	overlay.addEventListener('click', closeFastSellModal);
 	
-	// Sell actions
 	instantSellBtn.addEventListener('click', () => {
 		alert(`✅ ${skin.name} başarıyla ₺${(skin.price * 0.85).toLocaleString('tr-TR')} karşılığında satıldı!\n💰 Para cüzdanınıza yatırıldı.`);
 		closeFastSellModal();
@@ -480,25 +441,20 @@ function showFastSellModal(skin) {
 	});
 }
 
-// EKSIK BUTONLARI DÜZELTECEk SCRİPT - BU KOD SAYFA YÜKLENDİĞİNDE ÇALIŞIR
 document.addEventListener("DOMContentLoaded", function() {
-    // Tüm ürün kartlarını bul
     const itemCards = document.querySelectorAll('.item-card');
     
     itemCards.forEach((card, index) => {
         const cardInfo = card.querySelector('.item-card-info');
         const existingButton = card.querySelector('.add-to-cart');
         
-        // Eğer zaten doğru buton varsa geç
         if (existingButton && existingButton.classList.contains('add-to-cart')) {
             return;
         }
         
-        // Hatalı butonları temizle
         const brokenButtons = card.querySelectorAll('button[href], .eklemebtn:not(.add-to-cart)');
         brokenButtons.forEach(btn => btn.remove());
         
-        // Yeni buton oluştur
         if (cardInfo) {
             const h3 = cardInfo.querySelector('h3');
             const p = cardInfo.querySelector('p');
@@ -511,7 +467,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 const imageUrl = img.src;
                 const productId = `item_generated_${index}`;
                 
-                // Yeni buton oluştur
                 const newButton = document.createElement('button');
                 newButton.className = 'eklemebtn add-to-cart';
                 newButton.setAttribute('data-id', productId);
@@ -523,18 +478,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     <i class="fas fa-shopping-cart"></i>
                 `;
                 
-                // Butonu kart info'nun sonuna ekle
                 cardInfo.appendChild(newButton);
             }
         }
     });
     
-    // Event listener artık global olduğu için burada ayrıca eklemeye gerek yok
     const allButtons = document.querySelectorAll('.add-to-cart');
     console.log('Toplam ' + allButtons.length + ' buton hazır ve çalışıyor!');
 });
 
-// Fallback: Eğer hiçbir section aktif değilse, bıçak sayfasını aktif yap
 document.addEventListener('DOMContentLoaded', () => {
 	setTimeout(() => {
 		const activeSection = document.querySelector('.content-section.active');
